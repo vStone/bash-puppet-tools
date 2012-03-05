@@ -1,0 +1,7 @@
+= Usage:
+
+    cd
+    git clone git://projects.vstone.eu/puppet/puppet-tools/puppet-bashrc.git puppet-bashrc
+    ln -sf ~/puppet-bashrc/bashrc_puppet ~/.bashrc_puppet
+    ln -sf ~/puppet-bashrc/mkpuppetmod ~/.mkpuppetmod
+    echo 'source ~/.bashrc_puppet' >> ~/.bashrc
