@@ -1,0 +1,183 @@
+# find_dir_up(): Find a directory by traversing the parent directories.
+#
+# arguments:
+#  1:   name of directory to find.
+#  2:   default to return if directory is not found
+#  3:   Additional required folder that should be in the parent path. (optional)
+#
+# returns: either the default or the found directory
+find_dir_up() {
+
+  local name=$1;
+  local default="$2";
+  local required="$3";
+
+  if [ -d "./${name}" ]; then
+    echo "./${name}"; return 0;
+  else
+    local path="../${name}"
+    local loop=0;
+    local realpath;
+
+    while [ $loop -eq 0 ]; do
+      realpath="`readlink -f $path`";
+      if [ "${realpath}" == "/${name}" ]; then
+        loop=1;
+      fi;
+      if [ -d $path ]; then
+        if [[ -z $required || "$realpath" == */$required/* ]]; then
+          loop=1;
+          echo "${path}"; return;
+        fi;
+      fi;
+      path="../${path}"
+    done;
+  fi;
+  if [ -n $default ]; then
+    echo "$default";
+  fi;
+
+}
+
+detect_module_dir() {
+  find_dir_up 'modules' '/etc/puppet/modules'
+}
+
+detect_manifests_dir() {
+  find_dir_up 'manifests' "`pwd`" "modules"
+}
+
+detect_class_name() {
+  local name="$1"
+  local manifests="`find_dir_up 'manifests' '_FAILTRAIN_' 'modules'`";
+  if [[ "$manifests"x == '_FAILTRAIN_x' ]]; then
+    echo $name; return 0;
+  fi;
+  local manifests_path="`readlink -f $manifests`";
+  local modulename="`pwd | sed 's@.*/modules/\([^/]\+\)/manifests.*@\1@'`";
+  if [[ "${modulename}"x == `pwd`x ]]; then
+    echo "You are in the wrong folder!  cd $manifests_path" 1>&2
+    return 13;
+  fi;
+
+  if `pwd | grep -q "${modulename}/manifests/.*"`; then
+    modulename=`pwd | sed -e "s@.*/modules/\([^/]\+\)/manifests/\(.*\)@\1::\2@" -e "s@/@::@g"`
+  fi;
+  if [ "$name"x == 'initx' ]; then
+    echo "${modulename}"
+  else
+    echo "${modulename}::${name}"
+  fi;
+}
+
+mkpuppetclass() {
+  local name="$1";
+  local modulename="$2";
+  local classname;
+  if [[ -z $name ]]; then
+    echo "Failed! you need to supply a name!";
+    return 1;
+  fi;
+  if `echo "${name}" | grep -q "\.pp\$"`; then
+    file="${name}";
+    name="`echo ${name} | sed 's@\.pp$@@'`";
+  fi;
+
+  classname="`detect_class_name ${name}`";
+  if [ $? == 13 ]; then
+    classname="${name}"
+  fi;
+  if [[ -z $modulename ]]; then
+      modulename="${classname%%::*}"
+  fi;
+  local file="${name}.pp"
+  if [[ -f ~/.mkpuppetmod/$file ]]; then
+    cat ~/.mkpuppetmod/$file | sed \
+      -e "s@%class@$classname@g" \
+      -e "s@%module@$modulename@g" >> $file
+  else
+    cat >>$file << EOCLASS
+# = Class: $classname
+#
+# Description of $classname
+#
+# == Parameters:
+#
+# \$param::   Description of parameter
+#
+# == Actions:
+#
+# == Requires:
+#
+# == Sample Usage:
+#
+class $classname {
+  ## Copy paste snippets:
+  # template("\${module_name}/template.erb")
+  # source => "puppet:///modules/\${module_name}/file"
+}
+
+EOCLASS
+  fi;
+  echo "mkclass: created file $file";
+
+}
+
+mkpuppetmod () {
+  local workdir_check=1;
+  local workdir=".";
+  case "$1" in
+    -f|--force)   workdir_check=0;
+                  shift;;
+  esac
+  local name="$1";
+
+  if [[ "$workdir_check" == 1 ]]; then
+    if [[ -d ./modules ]]; then
+      workdir="./modules";
+    elif [[ -d ../modules ]]; then
+      workdir="../modules";
+    else
+      workdir="/etc/puppet/modules"
+    fi
+  fi;
+
+  mkdir -v -p $workdir/$name/{files,manifests,templates}
+  cwd=`pwd`
+  cd $workdir/$name/manifests
+  mkpuppetclass init
+  mkpuppetclass params
+  mkpuppetclass packages
+  mkpuppetclass service
+  mkdir service && cd service && mkpuppetclass disabled
+  cd $cwd;
+}
+
+reformat_pp_file() {
+  if [ -f "$1" ]; then
+    pp_fix_tabs $1;
+    pp_strip_trailing_whitespaces $1;
+    pp_reformat_quotes $1;
+  else
+    echo "File '$1' not found.";
+    return 1;
+  fi
+}
+
+pp_fix_tabs() {
+  sed -i "s@\t@  @g" $1
+}
+
+pp_strip_trailing_whitespaces() {
+  sed -i "s@\s*\$@@g" $1
+}
+
+pp_reformat_quotes() {
+  local f=$1;
+  if [ -f $f ]; then
+    sed -i "s@^\([^']*\)\"\([^\"$]\+\)\"\([^']*\)\$@\1'\2'\3@g" $f;
+  fi;
+}
+
+
+# vim: filetype=sh
