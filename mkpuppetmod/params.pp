@@ -12,6 +12,10 @@
 #     packages => 'value'
 #   }
 #
+# == Todo:
+#
+# * Update documentation
+#
 class %class (
   $packages = undef
 ){

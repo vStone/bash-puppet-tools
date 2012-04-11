@@ -16,6 +16,10 @@
 #
 # == Sample Usage:
 #
+# == Todo:
+#
+# * Update documentation
+#
 class %class {
   ## Copy paste snippets:
   # template("${module_name}/template.erb")

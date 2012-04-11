@@ -14,6 +14,10 @@
 #
 #   include %class
 #
+# == Todo:
+#
+# * Update documentation
+#
 class %class {
 
   require %module::params

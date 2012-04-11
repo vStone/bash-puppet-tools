@@ -12,6 +12,9 @@
 #
 # == Sample Usage:
 #
+# == Todo:
+#
+# * Update documentation
 #
 class %class {
   include %module::packages
