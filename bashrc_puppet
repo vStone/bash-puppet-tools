@@ -95,6 +95,10 @@ mkpuppetclass() {
     cat ~/.mkpuppetmod/$file | sed \
       -e "s@%class@$classname@g" \
       -e "s@%module@$modulename@g" >> $file
+  elif [[ -f ~/.mkpuppetmod/default.pp ]]; then
+    cat ~/.mkpuppetmod/default.pp | sed \
+      -e "s@%class@$classname@g" \
+      -e "s@%module@$modulename@g" >> $file
   else
     cat >>$file << EOCLASS
 # = Class: $classname
