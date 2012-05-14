@@ -1,4 +1,4 @@
-# = Class: %class
+# = Class: %name
 #
 # Configure settings for %module
 #
@@ -8,7 +8,7 @@
 #
 # == Sample Usage:
 #
-#   class {'%class':
+#   class {'%name':
 #     packages => 'value'
 #   }
 #
@@ -16,7 +16,7 @@
 #
 # * Update documentation
 #
-class %class (
+class %name (
   $packages = undef
 ){
 

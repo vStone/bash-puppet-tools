@@ -1,8 +1,8 @@
-# = Class: %class
+# = Class: %name
 #
 # Module version information.
 #
-class %class {
+class %name {
 
   $id = 'vstone-puppet-%module'
   $version = '0.1'

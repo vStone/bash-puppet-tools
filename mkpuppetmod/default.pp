@@ -1,6 +1,6 @@
-# = Class: %class
+# = %typedesc: %name
 #
-# Description of %class
+# Description of %name
 #
 # == Parameters:
 #
@@ -20,7 +20,7 @@
 #
 # * Update documentation
 #
-class %class {
+%type %name {
   ## Copy paste snippets:
   # template("${module_name}/template.erb")
   # source => "puppet:///modules/${module_name}/file"

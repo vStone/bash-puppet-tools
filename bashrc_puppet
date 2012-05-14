@@ -70,10 +70,46 @@ detect_class_name() {
   fi;
 }
 
+
 mkpuppetclass() {
   local name="$1";
   local modulename="$2";
+  if [[ -z $name ]]; then
+    echo "USAGE: mkpuppetclass <class_name> [module_name]"
+    echo ""
+    echo "PARAMETERS:"
+    echo "  - class_name:   name of the class to create"
+    echo "  - module_name:  force use of this module name (optional)"
+    return 1;
+  fi;
+
+  mkpuppetfile "$name" "class" "Class" "$modulename";
+}
+
+mkpuppetdef() {
+  local name="$1";
+  local modulename="$2";
+  if [[ -z $name ]]; then
+    echo "USAGE: mkpuppetdef <def_name> [module_name]"
+    echo ""
+    echo "PARAMETERS:"
+    echo "  - def_name:     name of the definition to create"
+    echo "  - module_name:  force use of this module name (optional)"
+    return 1;
+  fi;
+
+  mkpuppetfile "$name" "define" "Definition" "$modulename";
+}
+
+
+mkpuppetfile() {
+  local name="$1";
+  local typedesc="$3";
+  local type="$2";
+  local modulename="$4";
   local classname;
+
+  ## Sanitize the name
   if [[ -z $name ]]; then
     echo "Failed! you need to supply a name!";
     return 1;
@@ -83,25 +119,41 @@ mkpuppetclass() {
     name="`echo ${name} | sed 's@\.pp$@@'`";
   fi;
 
+  ## Detect the class name with scope.
   classname="`detect_class_name ${name}`";
   if [ $? == 13 ]; then
     classname="${name}"
   fi;
+
+  ## Set the default module name (if none has been provided)
   if [[ -z $modulename ]]; then
       modulename="${classname%%::*}"
   fi;
+
+  ## Find the template to use.
+
   local file="${name}.pp"
-  if [[ -f ~/.mkpuppetmod/$file ]]; then
-    cat ~/.mkpuppetmod/$file | sed \
-      -e "s@%class@$classname@g" \
-      -e "s@%module@$modulename@g" >> $file
-  elif [[ -f ~/.mkpuppetmod/default.pp ]]; then
-    cat ~/.mkpuppetmod/default.pp | sed \
-      -e "s@%class@$classname@g" \
-      -e "s@%module@$modulename@g" >> $file
+  local template _template;
+  for _template in ~/.mkpuppetmod/${name}-${type}.pp ~/.mkpuppetmod/${name}.pp ~/.mkpuppetmod/default-${type}.pp ~/.mkpuppetmod/default.pp; do
+    echo "Checking for template: $_template";
+    if [[ -f $_template ]]; then
+      echo "b b b b bingo"
+      template="$_template";
+      break;
+    fi
+  done;
+  if [[ -n $template ]]; then
+    cat $template | sed \
+      -e "s@%name@$classname@g" \
+      -e "s@%module@$modulename@g" \
+      -e "s@%typedesc@$typedesc@g" \
+      -e "s@%type@$type@g" \
+        >> $file
   else
+    ## No template found, Use this default thing.
     cat >>$file << EOCLASS
-# = Class: $classname
+## No template found
+# = $typedesc: $classname
 #
 # Description of $classname
 #
@@ -115,7 +167,7 @@ mkpuppetclass() {
 #
 # == Sample Usage:
 #
-class $classname {
+$type $classname {
   ## Copy paste snippets:
   # template("\${module_name}/template.erb")
   # source => "puppet:///modules/\${module_name}/file"
@@ -123,8 +175,7 @@ class $classname {
 
 EOCLASS
   fi;
-  echo "mkclass: created file $file";
-
+  echo "mkpuppetfile: created file $file";
 }
 
 mkpuppetmod () {

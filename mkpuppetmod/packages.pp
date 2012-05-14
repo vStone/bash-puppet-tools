@@ -1,4 +1,4 @@
-# = Class: %class
+# = Class: %name
 #
 # Installs packages for %module
 #
@@ -12,13 +12,13 @@
 #
 # == Sample Usage:
 #
-#   include %class
+#   include %name
 #
 # == Todo:
 #
 # * Update documentation
 #
-class %class {
+class %name {
 
   require %module::params
 

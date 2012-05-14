@@ -1,6 +1,10 @@
-# = Class: %name
+# = %typedesc: %name
 #
 # Description of %name
+#
+# == Parameters:
+#
+# $param::   description of parameter. default value if any.
 #
 # == Actions:
 #
@@ -16,8 +20,11 @@
 #
 # * Update documentation
 #
-class %name {
-  include %module::packages
-  include %module::service
+%type %name (
+
+) {
+  ## Copy paste snippets:
+  # template("${module_name}/template.erb")
+  # source => "puppet:///modules/${module_name}/file"
 }
 

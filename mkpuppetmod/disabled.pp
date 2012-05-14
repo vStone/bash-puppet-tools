@@ -1,12 +1,12 @@
-# = Class: %class
+# = Class: %name
 #
 # Sets up but does not enable the service
 #
 # == Sample Usage:
 #
-# include %class
+# include %name
 #
-class %class inherits %module::service {
+class %name inherits %module::service {
 
   Service['%module'] {
     ensure => 'stopped',
