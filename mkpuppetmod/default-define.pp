@@ -18,7 +18,7 @@
 #
 # == Todo:
 #
-# * Update documentation
+# TODO: Update documentation
 #
 %type %name (
 

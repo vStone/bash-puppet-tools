@@ -14,9 +14,11 @@
 #
 # == Todo:
 #
-# * Update documentation
+# TODO: Update documentation
 #
-class %name {
+class %name (
+
+) inherits %name::params {
   include %module::packages
   include %module::service
 }
