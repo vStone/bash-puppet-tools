@@ -18,11 +18,11 @@
 #
 # * Update documentation
 #
-class %name {
+class %name (
+  $packages = $::%module::params::pkgs
+) inherits %module::params {
 
-  require %module::params
-
-  package {$%module::params::pkgs:
+  package {$packages:
     ensure => 'installed',
     alias  => '%module',
   }

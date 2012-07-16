@@ -14,7 +14,7 @@
 #
 # == Todo:
 #
-# * Update documentation
+# TODO: Update documentation
 #
 class %name (
   $packages = undef

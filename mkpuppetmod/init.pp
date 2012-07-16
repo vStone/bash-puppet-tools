@@ -19,7 +19,7 @@
 class %name (
 
 ) inherits %name::params {
-  include %module::packages
-  include %module::service
+  include ::%module::packages
+  include ::%module::service
 }
 

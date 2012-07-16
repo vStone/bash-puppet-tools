@@ -18,22 +18,22 @@
 #
 # * Update documentation
 #
-class %name {
+class %name (
+  $service_name       = $::%module::params::service_name,
+  $service_path       = $::%module::params::service_path,
+  $service_hasrestart = $::%module::params::service_hasrestart,
+  $service_hasstatus  = $::%module::params::service_hasstatus
+) inherits %module::params  {
 
-  require %module::params
-  $service_name = $%module::params::service_name
-  $service_path = $%module::params::service_path
-  $service_hasrestart = $%module::params::service_hasrestart
-  $service_hasstatus = $%module::params::service_hasstatus
 
-  service {'%module':
+  service {$service_name
     ensure     => 'running',
     enable     => true,
     name       => $service_name,
     path       => $service_path,
     hasrestart => $service_hasrestart,
     hasstatus  => $service_hasstatus,
-    require    => Package['%module']
+    require    => Package['%module'],
   }
 
 }

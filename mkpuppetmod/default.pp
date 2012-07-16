@@ -20,7 +20,9 @@
 #
 # TODO: Update documentation
 #
-%type %name {
+%type %name (
+
+) {
   ## Copy paste snippets:
   # template("${module_name}/template.erb")
   # source => "puppet:///modules/${module_name}/file"

@@ -8,7 +8,7 @@
 #
 class %name inherits %module::service {
 
-  Service['%module'] {
+  Service['%::module::params::service_name'] {
     ensure => 'stopped',
     enable => false,
   }
