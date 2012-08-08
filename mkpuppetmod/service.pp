@@ -26,7 +26,7 @@ class %name (
 ) inherits %module::params  {
 
 
-  service {$service_name
+  service {%module:
     ensure     => 'running',
     enable     => true,
     name       => $service_name,
