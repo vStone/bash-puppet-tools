@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+
+function _help() {
+  cat << EOHELP
+
+
+
+EOHELP
+}
+
+
+if `getopt -T >/dev/null 2>&1` ; [ $? = 4 ] ; then
+  true; # Enhanced getopt.
+else
+  log_error "main" "You are using an old getopt version $(getopt -V)";
+  exit 1;
+fi
+
+
+TEMP=`getopt -o -yo:qlmhvkc:: --long yes,options:,quiet,list-config,modules,help,verbose,keep-tmp,config:: \
+    -n 'bashdl' -- "$@"`;
