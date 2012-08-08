@@ -1,4 +1,4 @@
-= Usage:
+# Usage:
 
     cd
     git clone git://projects.vstone.eu/puppet/puppet-tools/puppet-bashrc.git puppet-bashrc
@@ -7,7 +7,7 @@
     echo 'source ~/.bashrc_puppet' >> ~/.bashrc
 
 
-= Templates:
+# Templates:
 
   You can override the used templates by adjusting them in the ~/.mkpuppetmod
   folder. The script will look for templates based on the following pattern:
